@@ -1,0 +1,175 @@
+# full TLS handshake summary + certificate chain as the client sees it
+# collected: Sun Sep 20 10:45:52 UTC 2026 from e2b.local ()
+# ----------------------------------------------------------
+$ openssl s_client -connect 127.0.0.1:443 -servername app.team1.test -CAfile ca.crt
+Connecting to 127.0.0.1
+depth=1 O=team1 CN Course Project, CN=team1 Local Root CA
+verify return:1
+depth=0 O=team1 CN Course Project, CN=app.team1.test
+verify return:1
+CONNECTED(00000003)
+---
+Certificate chain
+ 0 s:O=team1 CN Course Project, CN=app.team1.test
+   i:O=team1 CN Course Project, CN=team1 Local Root CA
+   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption
+   v:NotBefore: Sep 20 10:32:21 2026 GMT; NotAfter: Dec 23 10:32:21 2028 GMT
+-----BEGIN CERTIFICATE-----
+MIIEzjCCAragAwIBAgIUZIb82diwbn+Fd+VHgZxSBdHDUNUwDQYJKoZIhvcNAQEL
+BQAwQDEgMB4GA1UECgwXdGVhbTEgQ04gQ291cnNlIFByb2plY3QxHDAaBgNVBAMM
+E3RlYW0xIExvY2FsIFJvb3QgQ0EwHhcNMjYwOTIwMTAzMjIxWhcNMjgxMjIzMTAz
+MjIxWjA7MSAwHgYDVQQKDBd0ZWFtMSBDTiBDb3Vyc2UgUHJvamVjdDEXMBUGA1UE
+AwwOYXBwLnRlYW0xLnRlc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+AQDilw+Lh/jdtcs3tB/j+QNcVkiD8XiuzUc6YAsk7tFAsfXwk6hCdXN2FUxN+BGF
+b9PlglR0h/UgsiyFQFvyg8RKmnZGWfWD+QW56wW5XYVfPfHer4/FdHt7UQArypQ4
+psLyVNViUT2dYgZNdilFjHZx5C19z4Vy1JnhyQExVMs4eaC7xcCm62DHnv7htaoU
+mCXylq9vEIbqe+Gd9zGzopDTxTnWB4OHgzUqrE/gDgUTf+9MDYFB5/b/RGhjA6Fh
+5IZWPpPKa40ktn8uU44W61c11daq1WSxfS2uD1FRPcaLcSD7dPfSI38RmrLJRsdM
+GCOxcGQ0F8LRG2DlM0d6qOaHAgMBAAGjgcQwgcEwCQYDVR0TBAIwADAOBgNVHQ8B
+Af8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwTwYDVR0RBEgwRoIOYXBwLnRl
+YW0xLnRlc3SCDmFwaS50ZWFtMS50ZXN0ggwqLnRlYW0xLnRlc3SCCnRlYW0xLnRl
+c3SHBMCoAQyHBH8AAAEwHQYDVR0OBBYEFKy+wRJj5lY1OCvyeRqZuqzWNQqvMB8G
+A1UdIwQYMBaAFEHAEJaVKDo1Bk1kseIn1IEt9m8WMA0GCSqGSIb3DQEBCwUAA4IC
+AQBv6rcRLakyO39HdKo4CR1AMDVhvBoQ457i3PLZuptjLRfrdDn2oaAUp8JPWJkg
+ZycImHin2WohnuA6OVOWEwSCsoh66Yecd/91C4j00FxBdtIyQFT73uUPKz0cQN51
+DdD0VujjFqfo/j8317JcMpmxNf7zDxkidX72O16rbNFtBKKnJq/m9ODuJgmXXS3b
+ChOA9rnsh4GaWdj+0/+oIFTtiAqnHErWAnBTJKZOIjnLKyG5vvLwZOPfsSZClunP
+GxHuRUdRRig4yZX4cOoA2ZoOVwbslnFYL8pi28pDsbTTPzR3eF/CzsuDmVzBmNOJ
+LuRgYvu8mV5xHmpAyvVs+QzDq3kx5eJgIm6wjFt6HVFqI+jRGs+wKQiVv8W1bJY8
+CeAPgzJIk/O1V7FVC90Lz4ui03dYNrzigXk4lvBF4vy6eldgnd5WinTBQad1S9Bh
+2OBkxmT39SAzX8n1PhsXcaAMtI1l3och802/6TrWui9WRbY4Vfc4sV0udehg9axZ
+FSYJZWiWE/PrUqP5xcmCimPEbffr0ro678RVAuhlCHqvbS/XXX+sCUeFpzcwRE3m
+jHyajjwJY/OSUtVBm44uDSNo+T1PXIbJVfcHxm3FAyC68JAvgpdiE/qLJ2YRaCXc
+yuhyq9xR7OQDndSoKy+iLO416qnLbFRcgZknhB3Blc29Sw==
+-----END CERTIFICATE-----
+ 1 s:O=team1 CN Course Project, CN=team1 Local Root CA
+   i:O=team1 CN Course Project, CN=team1 Local Root CA
+   a:PKEY: RSA, 4096 (bit); sigalg: sha256WithRSAEncryption
+   v:NotBefore: Sep 20 10:32:21 2026 GMT; NotAfter: Sep 19 10:32:21 2031 GMT
+-----BEGIN CERTIFICATE-----
+MIIFYTCCA0mgAwIBAgIUKHBGfuiVbD7FZHm81ht19daQAwowDQYJKoZIhvcNAQEL
+BQAwQDEgMB4GA1UECgwXdGVhbTEgQ04gQ291cnNlIFByb2plY3QxHDAaBgNVBAMM
+E3RlYW0xIExvY2FsIFJvb3QgQ0EwHhcNMjYwOTIwMTAzMjIxWhcNMzEwOTE5MTAz
+MjIxWjBAMSAwHgYDVQQKDBd0ZWFtMSBDTiBDb3Vyc2UgUHJvamVjdDEcMBoGA1UE
+AwwTdGVhbTEgTG9jYWwgUm9vdCBDQTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCC
+AgoCggIBAOF9b0/s6LTK79FbyOVQEf2Y8Gu2XTOCxvK2kPVfa2DD9qig6P7nyp2D
+AcXHovMovhfdTSOGIgFTCcSd8xLfi1ygemBisGU7h5iqxxtRHjWZehiU1DPYdHbt
+rNYLCWshBiEaAeUCEkqSnQ4qMCi8WlOQ2O/GC6myJpIkhwX9Wg7WMwgnSt7JqL2P
+utX7XmUKuBSvs2Ih6BoqwlOdVYpWRhzBiNbCLiHd25ViRK9MGOBKobnChsA62nnn
+awkrFz5qbjLjzu7LBVipJ6StFBKtxXWuBB74jzuzUpIRvh7cYHN6Xh5mnzdWAqkQ
+8BLqm081rWyTm9NXcbB0lcX4AZtlLRgWzLI8BwgcZksE7lOlNWTkSq9kdQiI0W/F
+OZPjG5b9xjVbKt4kHLhvJuw32oW+CezeNhcalNRTVpAVgcE8pWZMJRuor6KqdTkK
+nMa/u0TUcDWFrxSRxPeT/LTz+4aqSpJNNIGzJ7zKrk2hvdjK+i17sd54C/hDDK19
+F3OnGvJlqqoq1OcsAezcWqwQ9Oi705EwZsfUWSJt0swZtomlNNmffILF+bK1khpU
+W47yqi4pUqIU29hRshVQnMw8docJ80EjotggPcJ0GU5W1sokzFzsu3vDcqOOvZXT
+iCk9pDi3kXJrNIsh+nE2ag9FHY29auBauqNh+4lJ9rGXBrfqPMPnAgMBAAGjUzBR
+MB0GA1UdDgQWBBRBwBCWlSg6NQZNZLHiJ9SBLfZvFjAfBgNVHSMEGDAWgBRBwBCW
+lSg6NQZNZLHiJ9SBLfZvFjAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUA
+A4ICAQBnU4DWaJi5TcDxC6rYE6c+CfFgMLfFn/+AYM15LFDVX4oIRO60dD91oCL2
+BYD2SZdjdhelsAmLUKzAOpL0WJbb2UD6k8ZyQfUPjwKrDA53VUGBN3+QMJw+Tnuj
+Vc9PfIgHZwM8X2cmhCANhJo4fJJg4x4j77XQbxpwlubCUJWexUfqZ9LIrBC3lIw0
+gtrM8q/9RVAi11tdfXtjzqJKXOgbPIc8G734KMnGJrUe3G6KVlhs9lLvvNYWm736
+GI4VinN7iBOpvBHKUba5iyBKk5MPDWzz1KFfYX39nJ1fM7I5qsXocrJNE/2K5K6t
+0WbbOM03Kt2435RmNhMCt+rxM41NhK14xOvS3gHeNJ/gfvrtgJnQBTlTkkm48WG/
+tIZFoDjM25HfqzaieoonOuFVnjQTOdvZzN/NoHobYuTn6pZPzftwFh2maIdwxoaK
+h0UPdn2fo4BdJlxxM2VB/WOV25UbEn6cZOd1zCDdWj89PKjWmGc5fcK5MK2KsXdr
+aQqHXVKpY0/a6bYXGbLVFx/uZ0bOJCI2KuQ9VmTnPEe3aFKHV2eOjCepL8yDpmC9
+HXAdpW2vKW96JsowJlYZwBiobKx8B+KZGRvAsjNlWsNKY8Wu997BmZAeXWbiGemh
+0h2u7saaMzeMZQQX1eNcugVnWeT5ZuJ/gEAC3x0bMpear77NUw==
+-----END CERTIFICATE-----
+---
+Server certificate
+subject=O=team1 CN Course Project, CN=app.team1.test
+issuer=O=team1 CN Course Project, CN=team1 Local Root CA
+---
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature type: rsa_pss_rsae_sha256
+Negotiated TLS1.3 group: X25519MLKEM768
+---
+SSL handshake has read 4268 bytes and written 1636 bytes
+Verification: OK
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Protocol: TLSv1.3
+Server public key is 2048 bit
+This TLS version forbids renegotiation.
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify return code: 0 (ok)
+---
+DONE
+---
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: 184B11AF2787E06F8A91C04E8DD655BBDE037552F605ED99CAF79102E6EC87C9
+    Session-ID-ctx: 
+    Resumption PSK: 864B1F5896FD6F319A0936154D971EF9154CFD409ECD6552793BEA9C73AAE50CA59EE2E08C25DB858B2C80B4C8640F47
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 600 (seconds)
+    TLS session ticket:
+    0000 - 39 84 34 b5 ef 96 3e 97-a3 61 cd 7d 92 3d eb ec   9.4...>..a.}.=..
+    0010 - 56 bd 57 fb 86 93 a1 27-da 14 c9 42 e6 06 3d 21   V.W....'...B..=!
+    0020 - d8 5a ce dd 21 cd bf 75-df ea 56 28 17 59 c8 89   .Z..!..u..V(.Y..
+    0030 - 41 17 43 00 c1 a8 4c ff-97 67 05 15 2c 9b 36 bb   A.C...L..g..,.6.
+    0040 - ed 78 66 90 85 75 73 76-57 35 66 70 62 4b 58 cb   .xf..usvW5fpbKX.
+    0050 - ca 98 bf c4 01 37 fe 03-1e 5c 23 62 57 f6 51 12   .....7...\#bW.Q.
+    0060 - 6a 7c cb d2 f1 32 8f 11-80 ee 7f ea 9b 94 35 c9   j|...2........5.
+    0070 - 9a 97 83 ee 0e 6b 3b 0e-81 22 04 09 f0 85 24 d5   .....k;.."....$.
+    0080 - f5 1d f0 14 18 ad aa 94-8e de ca 59 7d 92 e7 11   ...........Y}...
+    0090 - 62 3a 74 71 17 3e ed e3-5f e8 82 f0 53 22 11 9b   b:tq.>.._...S"..
+    00a0 - cb a4 4e e4 5f 9e 21 4c-da 4e c7 b9 b1 00 db 81   ..N._.!L.N......
+    00b0 - c3 fa d6 f5 78 76 bc 39-8f 9d 0b 21 10 5b 09 19   ....xv.9...!.[..
+    00c0 - 3f 52 76 56 44 5a 03 b6-f8 a1 9d d4 56 4f 35 5f   ?RvVDZ......VO5_
+    00d0 - 4e 00 a6 ea 8e 0c ed b7-f4 b9 a0 5a ba 9e 14 e6   N..........Z....
+    00e0 - 4e e1 12 1e fd 2a 89 a6-54 0f 11 23 62 90 42 30   N....*..T..#b.B0
+
+    Start Time: 1789901152
+    Timeout   : 7200 (sec)
+    Verify return code: 0 (ok)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK
+---
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: 5F45CE2C3EF531312A954C9EB3B998F0E9900D61A6E22FA6DF2980560A9C6ED2
+    Session-ID-ctx: 
+    Resumption PSK: E689546B4878EA46AB07A1548E13F1C3AF952C23D1E5A8AD8D59D35C06E14635F7FAEC1CF92831F7BA9D6511AE81FFCF
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 600 (seconds)
+    TLS session ticket:
+    0000 - 39 84 34 b5 ef 96 3e 97-a3 61 cd 7d 92 3d eb ec   9.4...>..a.}.=..
+    0010 - ca a6 0a 38 21 60 b8 f2-2f 31 46 51 4f 7b e7 e7   ...8!`../1FQO{..
+    0020 - 83 bd db 4f a7 2b a6 46-5f 45 fe 58 d3 92 0e 67   ...O.+.F_E.X...g
+    0030 - 4d 70 4a 0a e4 a4 d2 9d-d9 88 09 a6 6b 24 ee 79   MpJ.........k$.y
+    0040 - d8 d2 cf bd 94 b0 76 52-9f ec 1c bc cb e2 f8 af   ......vR........
+    0050 - fd 2e ef d8 fe 4b 64 58-9b a1 31 09 88 e8 e5 e0   .....KdX..1.....
+    0060 - 68 cb e4 a5 ae 46 6d 04-d5 34 1e 8e a6 93 f3 48   h....Fm..4.....H
+    0070 - 7a 7c f6 b9 63 36 44 64-d2 fc a9 5a d9 ab 10 04   z|..c6Dd...Z....
+    0080 - f7 76 ea 05 68 94 4a bb-d3 ad 6a 51 7d 94 12 0e   .v..h.J...jQ}...
+    0090 - d6 d1 ce af 00 bd 40 1a-05 18 4b 0c 3f 15 ca 64   ......@...K.?..d
+    00a0 - e1 5c a4 bd 87 55 cf 69-4e 7c 73 0a 47 75 6e d8   .\...U.iN|s.Gun.
+    00b0 - 3e af 99 6f 6c d0 f7 60-33 4e 8d 41 be 63 13 df   >..ol..`3N.A.c..
+    00c0 - 27 84 bf 76 8d 6c 8a 7f-e0 4f 46 da 82 43 bc 24   '..v.l...OF..C.$
+    00d0 - bf 4e 45 9b 41 53 56 3f-4d 8f f4 85 fc f2 53 bd   .NE.ASV?M.....S.
+    00e0 - fe dd d1 8e 58 8e 8f 1c-18 a4 13 1c f7 89 fb e9   ....X...........
+
+    Start Time: 1789901152
+    Timeout   : 7200 (sec)
+    Verify return code: 0 (ok)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK

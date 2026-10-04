@@ -1,0 +1,34 @@
+# Cache-Control/ETag headers + conditional request returning 304
+# collected: Sun Sep 20 10:45:52 UTC 2026 from e2b.local ()
+# ----------------------------------------------------------
+$ curl -sI https://app.team1.test/api/cached
+HTTP/2 200 
+server: nginx/1.26.3
+date: Sun, 20 Sep 2026 10:45:52 GMT
+content-type: application/json; charset=utf-8
+content-length: 466
+x-backend: B
+x-backend-host: e2b.local
+x-served-at: 2026-09-20T10:45:52+00:00
+cache-control: public, max-age=60
+etag: "66671571bfe816a2"
+last-modified: Wed, 01 Jan 2025 09:00:00 GMT
+x-edge: team1-edge
+x-edge-ip: 127.0.0.1
+
+
+$ curl -sI -H 'If-None-Match: "66671571bfe816a2"' https://app.team1.test/api/cached
+HTTP/2 304 
+server: nginx/1.26.3
+date: Sun, 20 Sep 2026 10:45:52 GMT
+x-backend: A
+x-backend-host: e2b.local
+x-served-at: 2026-09-20T10:45:52+00:00
+cache-control: public, max-age=60
+etag: "66671571bfe816a2"
+last-modified: Wed, 01 Jan 2025 09:00:00 GMT
+x-edge: team1-edge
+x-edge-ip: 127.0.0.1
+
+
+(second response = 304 Not Modified: headers only, zero body bytes re-sent)

@@ -1,0 +1,14 @@
+# Runtime state (logs, pid files) — regenerated on every machine
+run/
+/tmp/
+
+# Private key material — NEVER commit keys, even self-signed ones.
+# ca.crt is fine to share (that's the point — clients need it to trust us).
+deploy/mac2/certs/*.key
+deploy/mac2/certs/*.csr
+deploy/mac2/certs/*.srl
+*.pem
+
+# OS noise
+.DS_Store
+*.sh

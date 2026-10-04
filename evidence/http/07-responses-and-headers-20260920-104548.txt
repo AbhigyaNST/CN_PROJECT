@@ -1,0 +1,65 @@
+# status JSON with X-Backend, welcome JSON, and HTTP->HTTPS 301
+# collected: Sun Sep 20 10:45:52 UTC 2026 from e2b.local ()
+# ----------------------------------------------------------
+$ curl -sD - https://app.team1.test/api/status
+HTTP/2 200 
+server: nginx/1.26.3
+date: Sun, 20 Sep 2026 10:45:52 GMT
+content-type: application/json; charset=utf-8
+content-length: 204
+x-backend: A
+x-backend-host: e2b.local
+x-served-at: 2026-09-20T10:45:52+00:00
+x-edge: team1-edge
+x-edge-ip: 127.0.0.1
+
+{
+  "backend": "A",
+  "status": "ok",
+  "hostname": "e2b.local",
+  "pid": 4688,
+  "listen_port": 3001,
+  "uptime_seconds": 129.2,
+  "requests_served": 8,
+  "server_time_utc": "2026-09-20T10:45:52+00:00"
+}
+$ curl -sD - https://app.team1.test/
+HTTP/2 200 
+server: nginx/1.26.3
+date: Sun, 20 Sep 2026 10:45:52 GMT
+content-type: application/json; charset=utf-8
+content-length: 456
+x-backend: B
+x-backend-host: e2b.local
+x-served-at: 2026-09-20T10:45:52+00:00
+x-edge: team1-edge
+x-edge-ip: 127.0.0.1
+
+{
+  "service": "Team Backend B",
+  "status": "running",
+  "message": "Hello from Backend B! You reached me through the nginx edge (reverse proxy + load balancer).",
+  "backend": "B",
+  "hostname": "e2b.local",
+  "pid": 4435,
+  "listen_port": 3002,
+  "uptime_seconds": 250.7,
+  "requests_served": 18,
+  "server_time_utc": "2026-09-20T10:45:52+00:00",
+  "endpoints": [
+    "/",
+    "/api/status",
+    "/api/cached",
+    "/health",
+    "/slow?seconds=N"
+  ]
+}
+$ curl -sI http://app.team1.test/   (redirect)
+HTTP/1.1 301 Moved Permanently
+Server: nginx/1.26.3
+Date: Sun, 20 Sep 2026 10:45:52 GMT
+Content-Type: text/html
+Content-Length: 169
+Connection: keep-alive
+Location: https://app.team1.test/
+

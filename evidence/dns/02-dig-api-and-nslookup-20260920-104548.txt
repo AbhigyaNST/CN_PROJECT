@@ -1,0 +1,34 @@
+# api record + nslookup cross-check
+# collected: Sun Sep 20 10:45:48 UTC 2026 from e2b.local ()
+# ----------------------------------------------------------
+$ dig @127.0.0.1 api.team1.test
+
+; <<>> DiG 9.20.29-1~deb13u1-Debian <<>> @127.0.0.1 -p 53 api.team1.test A
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 6820
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;api.team1.test.			IN	A
+
+;; ANSWER SECTION:
+api.team1.test.		30	IN	A	127.0.0.1
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.1#53(127.0.0.1) (UDP)
+;; WHEN: Sun Sep 20 10:45:48 UTC 2026
+;; MSG SIZE  rcvd: 59
+
+
+$ nslookup app.team1.test 127.0.0.1
+Server:		127.0.0.1
+Address:	127.0.0.1#53
+
+Name:	app.team1.test
+Address: 127.0.0.1
+** server can't find app.team1.test: NXDOMAIN
+

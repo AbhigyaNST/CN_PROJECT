@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrG" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#1a7f37"/></marker>
+    <marker id="arrB" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#0b5cad"/></marker>
+    <marker id="arrO" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#b35900"/></marker>
+    <marker id="arrP" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#6f42c1"/></marker>
+  </defs>
+
+  <rect x="0" y="0" width="1000" height="700" fill="#ffffff"/>
+  <text x="30" y="30" font-size="19" font-weight="bold" fill="#111">Private Network Service Platform — team1.test topology (Phase 1 + Phase 2)</text>
+
+  <!-- ② client -> edge big arc (drawn first so boxes sit on top) -->
+  <path d="M 272 108 C 430 42, 600 42, 656 104" fill="none" stroke="#1a7f37" stroke-width="2.2" marker-end="url(#arrG)"/>
+  <text x="452" y="52" font-size="12.5" fill="#1a7f37" font-weight="bold">② TCP handshake → TLS handshake → HTTPS request</text>
+  <text x="452" y="68" font-size="11.5" fill="#1a7f37">TCP :443 (or :8443) · encrypted end-to-end client↔edge</text>
+
+  <!-- ① client <-> dns -->
+  <line x1="272" y1="130" x2="336" y2="130" stroke="#0b5cad" stroke-width="2.2" marker-end="url(#arrB)"/>
+  <line x1="336" y1="158" x2="272" y2="158" stroke="#0b5cad" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#arrB)"/>
+  <text x="266" y="118" font-size="11.5" fill="#0b5cad" font-weight="bold">① DNS query UDP:53</text>
+  <text x="262" y="176" font-size="11" fill="#0b5cad">①′ answer: Mac 2 IP (TTL 30)</text>
+
+  <!-- LAN bus -->
+  <rect x="60" y="270" width="880" height="46" rx="23" fill="#eef2f6" stroke="#9db2c4" stroke-width="1.5"/>
+  <text x="500" y="292" font-size="13.5" font-weight="bold" fill="#33475b" text-anchor="middle">Private Wi-Fi / LAN — single subnet (e.g. 192.168.1.0/24) · AP acts as switch (star topology)</text>
+  <text x="500" y="308" font-size="11" fill="#5b7288" text-anchor="middle">IP layer: hosts address each other directly · Link layer: Ethernet/Wi-Fi frames · ARP maps IP→MAC</text>
+
+  <!-- stubs to bus -->
+  <line x1="165" y1="200" x2="165" y2="270" stroke="#8a97a5" stroke-width="2"/>
+  <line x1="445" y1="200" x2="445" y2="270" stroke="#8a97a5" stroke-width="2"/>
+  <line x1="780" y1="222" x2="780" y2="270" stroke="#8a97a5" stroke-width="2"/>
+  <line x1="425" y1="316" x2="425" y2="424" stroke="#8a97a5" stroke-width="2"/>
+  <line x1="745" y1="316" x2="745" y2="424" stroke="#8a97a5" stroke-width="2"/>
+
+  <!-- Client box -->
+  <rect x="60" y="90" width="212" height="110" rx="10" fill="#f6f8fa" stroke="#57606a" stroke-width="1.8"/>
+  <text x="166" y="114" font-size="13.5" font-weight="bold" fill="#24292f" text-anchor="middle">Test Client (Mac 1 / Mac 4)</text>
+  <text x="166" y="134" font-size="11.5" fill="#444" text-anchor="middle">browser · curl · dig · Wireshark</text>
+  <text x="166" y="152" font-size="11.5" fill="#444" text-anchor="middle">DNS servers set to:</text>
+  <text x="166" y="169" font-size="11.5" fill="#0b5cad" text-anchor="middle">Mac 1 (+ Mac 3 backup, Phase 2)</text>
+  <text x="166" y="188" font-size="11" fill="#777" text-anchor="middle">trusts team CA in System keychain</text>
+
+  <!-- Mac 1 -->
+  <rect x="336" y="70" width="230" height="130" rx="10" fill="#e7f0fb" stroke="#0b5cad" stroke-width="2"/>
+  <text x="451" y="94" font-size="13.5" font-weight="bold" fill="#0b3d75" text-anchor="middle">Mac 1 — PRIVATE DNS</text>
+  <text x="451" y="114" font-size="11.5" fill="#222" text-anchor="middle">dnsmasq · UDP/TCP :53</text>
+  <text x="451" y="132" font-size="11.5" fill="#222" text-anchor="middle">zone: team1.test (never forwarded)</text>
+  <text x="451" y="150" font-size="11.5" fill="#222" text-anchor="middle">app / api → Mac 2 IP · TTL 30 s</text>
+  <text x="451" y="168" font-size="11.5" fill="#222" text-anchor="middle">log-queries = DNS evidence</text>
+  <text x="451" y="188" font-size="10.5" fill="#5b7288" text-anchor="middle">≈ AWS Route 53 private zone</text>
+
+  <!-- Mac 2 -->
+  <rect x="656" y="70" width="284" height="152" rx="10" fill="#e6f4ea" stroke="#1a7f37" stroke-width="2"/>
+  <text x="798" y="94" font-size="13.5" font-weight="bold" fill="#0f5223" text-anchor="middle">Mac 2 — THE EDGE</text>
+  <text x="798" y="114" font-size="11.5" fill="#222" text-anchor="middle">nginx reverse proxy + load balancer</text>
+  <text x="798" y="132" font-size="11.5" fill="#222" text-anchor="middle">TLS termination :443 / :8443 (HTTP/2 on)</text>
+  <text x="798" y="150" font-size="11.5" fill="#222" text-anchor="middle">HTTP :80/:8080 → 301 → HTTPS</text>
+  <text x="798" y="168" font-size="11.5" fill="#222" text-anchor="middle">round-robin · max_fails=2 fail_timeout=10s</text>
+  <text x="798" y="186" font-size="11.5" fill="#222" text-anchor="middle">proxy_next_upstream → transparent retries</text>
+  <text x="798" y="208" font-size="10.5" fill="#5b7288" text-anchor="middle">≈ cloud LB / CDN edge (ALB, GCP LB)</text>
+
+  <!-- ③ edge -> backends -->
+  <path d="M 742 226 C 690 320, 600 360, 556 436" fill="none" stroke="#b35900" stroke-width="2.2" marker-end="url(#arrO)"/>
+  <path d="M 812 226 C 810 320, 770 360, 752 420" fill="none" stroke="#b35900" stroke-width="2.2" marker-end="url(#arrO)"/>
+  <text x="560" y="345" font-size="11.5" fill="#b35900" font-weight="bold">③ proxied plain HTTP</text>
+  <text x="560" y="361" font-size="11" fill="#b35900">TCP :3001 (new handshake)</text>
+  <text x="790" y="345" font-size="11" fill="#b35900">TCP :3002</text>
+  <text x="565" y="380" font-size="10.5" fill="#8a6d3b">alternates A,B,A,B… (round-robin)</text>
+
+  <!-- Mac 3 -->
+  <rect x="300" y="424" width="252" height="132" rx="10" fill="#fff4e5" stroke="#b35900" stroke-width="2"/>
+  <text x="426" y="448" font-size="13.5" font-weight="bold" fill="#7a3e00" text-anchor="middle">Mac 3 — BACKEND A</text>
+  <text x="426" y="468" font-size="11.5" fill="#222" text-anchor="middle">python3 backend.py --name A</text>
+  <text x="426" y="486" font-size="11.5" fill="#222" text-anchor="middle">0.0.0.0:3001/TCP · X-Backend: A</text>
+  <text x="426" y="504" font-size="11.5" fill="#222" text-anchor="middle">/ · /api/status · /api/cached · /slow</text>
+  <text x="426" y="524" font-size="10.5" fill="#6f42c1" text-anchor="middle">Phase 2: backup DNS (:53) + standby edge (:443)</text>
+  <text x="426" y="544" font-size="10.5" fill="#5b7288" text-anchor="middle">≈ app-server instance in a private subnet</text>
+
+  <!-- Mac 4 -->
+  <rect x="620" y="424" width="252" height="132" rx="10" fill="#fff4e5" stroke="#b35900" stroke-width="2"/>
+  <text x="746" y="448" font-size="13.5" font-weight="bold" fill="#7a3e00" text-anchor="middle">Mac 4 — BACKEND B</text>
+  <text x="746" y="468" font-size="11.5" fill="#222" text-anchor="middle">python3 backend.py --name B</text>
+  <text x="746" y="486" font-size="11.5" fill="#222" text-anchor="middle">0.0.0.0:3002/TCP · X-Backend: B</text>
+  <text x="746" y="504" font-size="11.5" fill="#222" text-anchor="middle">+ second test client (dig / curl / browser)</text>
+  <text x="746" y="524" font-size="10.5" fill="#c0392b" text-anchor="middle">pf firewall: 3001/3002 open ONLY to Mac 2</text>
+  <text x="746" y="544" font-size="10.5" fill="#5b7288" text-anchor="middle">≈ second instance (other “AZ”)</text>
+
+  <!-- Phase 2 dashed flows -->
+  <path d="M 96 204 C 40 380, 90 560, 296 500" fill="none" stroke="#6f42c1" stroke-width="1.8" stroke-dasharray="6,5" marker-end="url(#arrP)"/>
+  <text x="66" y="560" font-size="11" fill="#6f42c1">④ Phase 2 (Ext A): backup DNS query UDP:53 → Mac 3</text>
+  <text x="66" y="576" font-size="11" fill="#6f42c1">⑤ Phase 2 (Ext E): after DNS cutover, HTTPS :443 → standby nginx on Mac 3</text>
+  <text x="66" y="592" font-size="10.5" fill="#777">    (X-Edge-IP header shows which edge answered — cutover is visible per request)</text>
+
+  <!-- Legend -->
+  <rect x="300" y="600" width="640" height="86" rx="8" fill="#fbfbfd" stroke="#c8ccd2"/>
+  <text x="316" y="622" font-size="12" font-weight="bold" fill="#222">Legend</text>
+  <line x1="316" y1="638" x2="356" y2="638" stroke="#0b5cad" stroke-width="2.2"/><text x="362" y="642" font-size="11" fill="#333">DNS (Application layer over UDP/53)</text>
+  <line x1="580" y1="638" x2="620" y2="638" stroke="#1a7f37" stroke-width="2.2"/><text x="626" y="642" font-size="11" fill="#333">client↔edge HTTPS (TCP+TLS+HTTP)</text>
+  <line x1="316" y1="658" x2="356" y2="658" stroke="#b35900" stroke-width="2.2"/><text x="362" y="662" font-size="11" fill="#333">edge→backend plain HTTP (private LAN)</text>
+  <line x1="580" y1="658" x2="620" y2="658" stroke="#6f42c1" stroke-width="1.8" stroke-dasharray="6,5"/><text x="626" y="662" font-size="11" fill="#333">Phase 2 resilience paths (Ext A / E)</text>
+  <text x="316" y="678" font-size="10.5" fill="#777">Numbers = order of operations in ONE client request. Backends never see the client’s TLS session; the client never learns backend IPs.</text>
+</svg>

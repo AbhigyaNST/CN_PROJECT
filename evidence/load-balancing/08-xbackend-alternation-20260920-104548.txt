@@ -1,0 +1,16 @@
+# 12 consecutive requests showing which backend served each
+# collected: Sun Sep 20 10:45:52 UTC 2026 from e2b.local ()
+# ----------------------------------------------------------
+$ for i in $(seq 12); do curl -sD - -o /dev/null .../api/status | grep -i x-backend; done
+request #1: x-backend: A
+request #2: x-backend: B
+request #3: x-backend: A
+request #4: x-backend: B
+request #5: x-backend: A
+request #6: x-backend: B
+request #7: x-backend: A
+request #8: x-backend: B
+request #9: x-backend: A
+request #10: x-backend: B
+request #11: x-backend: A
+request #12: x-backend: B

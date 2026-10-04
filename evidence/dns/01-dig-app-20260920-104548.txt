@@ -1,0 +1,25 @@
+# dig app.team1.test against primary DNS (answer must be the EDGE ip 127.0.0.1, TTL 30)
+# collected: Sun Sep 20 10:45:48 UTC 2026 from e2b.local ()
+# ----------------------------------------------------------
+$ dig @127.0.0.1 app.team1.test
+
+; <<>> DiG 9.20.29-1~deb13u1-Debian <<>> @127.0.0.1 -p 53 app.team1.test A
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 56363
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;app.team1.test.			IN	A
+
+;; ANSWER SECTION:
+app.team1.test.		30	IN	A	127.0.0.1
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.1#53(127.0.0.1) (UDP)
+;; WHEN: Sun Sep 20 10:45:48 UTC 2026
+;; MSG SIZE  rcvd: 59
+

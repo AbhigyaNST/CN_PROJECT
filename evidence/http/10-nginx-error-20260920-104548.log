@@ -1,0 +1,11 @@
+# nginx nginx-error.log — note client socket pairs and upstream= fields (which backend served)
+# collected: Sun Sep 20 10:45:52 UTC 2026 from e2b.local ()
+# ----------------------------------------------------------
+2026/09/20 10:41:28 [error] 2718#2718: *94 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: app.team1.test, request: "GET /api/status HTTP/2.0", upstream: "http://127.0.0.1:3001/api/status", host: "app.team1.test"
+2026/09/20 10:41:28 [error] 2718#2718: *99 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: app.team1.test, request: "GET /api/status HTTP/2.0", upstream: "http://127.0.0.1:3001/api/status", host: "app.team1.test"
+2026/09/20 10:41:28 [warn] 2718#2718: *99 upstream server temporarily disabled while connecting to upstream, client: 127.0.0.1, server: app.team1.test, request: "GET /api/status HTTP/2.0", upstream: "http://127.0.0.1:3001/api/status", host: "app.team1.test"
+2026/09/20 10:41:41 [error] 2718#2718: *126 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: app.team1.test, request: "GET /api/status HTTP/2.0", upstream: "http://127.0.0.1:3002/api/status", host: "app.team1.test"
+2026/09/20 10:41:41 [error] 2718#2718: *126 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: app.team1.test, request: "GET /api/status HTTP/2.0", upstream: "http://127.0.0.1:3001/api/status", host: "app.team1.test"
+2026/09/20 10:43:43 [error] 2718#2718: *139 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: app.team1.test, request: "GET /api/status HTTP/2.0", upstream: "http://127.0.0.1:3001/api/status", host: "app.team1.test"
+2026/09/20 10:43:43 [error] 2718#2718: *144 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: app.team1.test, request: "GET /api/status HTTP/2.0", upstream: "http://127.0.0.1:3001/api/status", host: "app.team1.test"
+2026/09/20 10:43:43 [warn] 2718#2718: *144 upstream server temporarily disabled while connecting to upstream, client: 127.0.0.1, server: app.team1.test, request: "GET /api/status HTTP/2.0", upstream: "http://127.0.0.1:3001/api/status", host: "app.team1.test"
