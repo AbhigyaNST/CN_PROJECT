@@ -1,140 +1,183 @@
-# Private Network Service Platform — CN Course Project
+# Computer Networks Course Project: Private Network Service Platform
 
-A complete, ready-to-run implementation of the two-phase Computer Networks
-course project: a private service platform across **4 Macs on one LAN** —
-**private DNS → HTTPS edge (reverse proxy + load balancer) → two backend
-app servers** — with tooling for packet-level evidence, the five required
-failure demos, and every Phase 2 resilience extension.
+> **Core Principle:** *The application stays simple — the network is the project.*
+
+A hands-on, team-based local networking project designed to demonstrate how real-world network requests travel across all layers of the OSI and TCP/IP stack from client to server and back. Built entirely on a private local network across **4 macOS laptops** with **zero cloud dependencies**.
+
+---
+
+## 1. Team Members & Roles
+
+| Machine | Assigned Role | Services Running | Course / Cloud Equivalent |
+|---|---|---|---|
+| **Mac 1** | **Private DNS Server + Client** | `dnsmasq` (Port 53/UDP), `dig`, `curl`, browser | Managed DNS Service (e.g., AWS Route 53) |
+| **Mac 2** | **Edge Reverse Proxy + Load Balancer** | `nginx` (Ports 443 & 8443/TCP), TLS Termination | Cloud Load Balancer / API Gateway / CDN Edge |
+| **Mac 3** | **Backend Server A** | Python REST Backend (Port 3001/TCP) | Application Server Instance A |
+| **Mac 4** | **Backend Server B + Client** | Python REST Backend (Port 3002/TCP), `curl`, browser | Application Server Instance B + Client |
+
+---
+
+## 2. Project Architecture & End-to-End Request Flow
+
+Clients never connect directly to the backend application servers. All traffic is resolved through the private DNS server and routed through the Edge reverse proxy.
 
 ```
-Client (Mac 1 / Mac 4)
-   │ ① DNS query "app.team1.test"                       UDP :53
-   ▼
-Mac 1 — dnsmasq (private DNS)   ──answer──▶  192.168.x.12  (TTL 30)
-   │ ② TCP handshake → TLS handshake → HTTPS request    TCP :443/:8443
-   ▼
-Mac 2 — nginx EDGE (TLS termination + round-robin LB + failover)
-   │ ③ proxied plain HTTP                               TCP :3001 / :3002
-   ├────────────▶  Mac 3 — Backend A   (responds  X-Backend: A)
-   └────────────▶  Mac 4 — Backend B   (responds  X-Backend: B)
+                  ┌──────────────────────────────────────────────────────────┐
+                  │                 Private LAN (Shared Wi-Fi)               │
+                  └──────────────────────────────────────────────────────────┘
+                                               │
+       [1] DNS Query "app.team1.test" (UDP :53)│
+       ───────────────────────────────────────►│ Mac 1 (DNS Server - dnsmasq)
+       ◄───────────────────────────────────────│ Resolves to Mac 2 IP (TTL: 30s)
+       [2] DNS Answer: 10.7.4.94               │
+                                               │
+Client (Mac 4 / Mac 1)                         │
+       │                                       │
+       │ [3] TCP 3-Way Handshake (SYN, SYN-ACK, ACK)
+       │ [4] TLS 1.3 Handshake (ClientHello, ServerHello, Cert, Encrypted Extensions)
+       │ [5] HTTPS Request: GET https://app.team1.test/api/status
+       ▼
+Mac 2 (Edge Nginx Reverse Proxy & Load Balancer - Port 443/8443)
+       │
+       │ Plain HTTP/1.1 (Internal LAN)
+       ├─────────────────────────► Mac 3: Backend A (Port 3001) [Returns X-Backend: A]
+       │       (Round-Robin)
+       └─────────────────────────► Mac 4: Backend B (Port 3002) [Returns X-Backend: B]
 ```
 
-Full diagram: [`docs/topology.svg`](docs/topology.svg) · Written architecture
-document (deliverable): [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+### Complete Protocol Flow Across the Layers:
+1. **Network & Data Link Layer:** All machines connect to the same Wi-Fi subnet (e.g., `10.7.x.x`), verified by bidirectional `ping` checks.
+2. **DNS Resolution (UDP Port 53):** Client queries the private DNS resolver on Mac 1 for `app.team1.test`. `dnsmasq` returns the IP of Mac 2 (the Edge) with a 30-second TTL.
+3. **TCP Connection (TCP Port 443):** Client initiates a TCP 3-way handshake (`SYN` → `SYN-ACK` → `ACK`) from an ephemeral source port to Mac 2 on port 443.
+4. **TLS Termination (Port 443):** Client and Mac 2 perform a TLS 1.2/1.3 handshake. Mac 2 presents a certificate signed by our private Root CA. The client validates the certificate using its local system trust store (no `-k` flag required).
+5. **Reverse Proxying & Load Balancing:** Nginx proxies the decrypted HTTP request to either Backend A (Mac 3:3001) or Backend B (Mac 4:3002) using round-robin distribution.
+6. **HTTP Response & Caching:** The backend responds with JSON and an `X-Backend: A|B` header. Cacheable endpoints return `Cache-Control: public, max-age=60` and `ETag`, allowing client revalidation and `304 Not Modified` responses.
 
-## Zero-dependency promise
+---
 
-| Component | Technology | Install needed |
-|---|---|---|
-| Backends (A & B) | Python 3 **standard library only** — one file | none (macOS has python3) |
-| Private DNS | dnsmasq | `brew install dnsmasq` (Mac 1, + backup machine) |
-| Edge / LB / TLS | nginx | `brew install nginx` (Mac 2) |
-| Certificates | OpenSSL local CA | none (macOS has openssl) |
-| Evidence tools | curl, dig, tcpdump/Wireshark | Wireshark optional (`brew install --cask wireshark`) |
+## 3. How to Run the Backends
 
-No cloud, no Docker, no pip/npm installs. Everything runs on your laptops.
+Both backend instances are powered by a single, lightweight Python application (`backends/backend.py`) built exclusively with the **Python 3 standard library** (zero external dependencies, no `pip install` required).
 
-## Repository map
-
-| Path | What it is | Deliverable it feeds |
-|---|---|---|
-| `config.env` | **The only file you edit**: team name, 4 IPs, ports, TTL | — |
-| `backends/backend.py` | Both REST backends (one file, roles A/B via flags) | Backend Source Code |
-| `templates/` | dnsmasq / nginx / pf-firewall templates with `{{placeholders}}` | Configuration Bundle |
-| `deploy/` | Generated, machine-ready configs (after `configure.sh`) | Configuration Bundle |
-| `certs/` | Local-CA + edge-certificate builder, trust instructions | TLS certificate setup notes |
-| `scripts/mac1-dns.sh` … `mac4-backend-b.sh` | Per-machine one-shot setup | — |
-| `scripts/verify.sh` | Automated **Phase 1 gate** check (all tasks A–G) | Evidence |
-| `scripts/demo-phase1.sh` | Rehearses graded demo steps 1–8 | Final Demonstration |
-| `scripts/failures.sh` | The 5 required failure demos (guided + automated) | Evidence |
-| `scripts/demo-phase2.sh` | Extensions A–F rehearsal | Phase 2 |
-| `scripts/diagnose.sh` | Layer-by-layer fault diagnosis (Extension F) | Troubleshooting |
-| `scripts/firewall-apply.sh` / `-rollback.sh` | pf service isolation + safe restore (Extension C) | Phase 2 |
-| `scripts/collect-evidence.sh` | Auto-fills `evidence/` with dig/curl/log/pcap proof | Evidence Folder |
-| `practice/run-local.sh` | **Entire platform on ONE machine** (rehearsal + emergency fallback) | — |
-| `docs/` | Architecture, setup guides, evidence checklist, viva Q&A bank, report template | Architecture Document, Final Report |
-| `evidence/` | Pre-structured folders (dns/tcp/tls/http/load-balancing/caching/failures/phase2) | Evidence Folder |
-
-## Quickstart
-
-### Option 1 — rehearse everything on one machine first (recommended!)
-
+### Run Backend A (on Mac 3):
 ```bash
-./practice/run-local.sh        # starts DNS + backup DNS + edge + both backends
-./scripts/verify.sh --local    # full Phase-1 gate check
-./scripts/failures.sh --local a       # all 5 failure demos, automated
-./scripts/demo-phase2.sh --local a    # backup-DNS failover, automated
-./practice/stop-local.sh
+python3 backends/backend.py --name A --port 3001
 ```
 
-### Option 2 — deploy to the 4 Macs
-
+### Run Backend B (on Mac 4):
 ```bash
-# 0) On EVERY Mac: copy this repo folder; install Homebrew + Xcode CLT.
-#    Mac 1: brew install dnsmasq        Mac 2: brew install nginx
-
-# 1) Edit config.env  ->  your TEAM name + the four real LAN IPs, then:
-./scripts/configure.sh
-./certs/make-ca-and-cert.sh
-
-# 2) Trust the CA on every CLIENT Mac (Mac 1, Mac 4) — see certs/README.md
-sudo security add-trusted-cert -d -r trustRoot \
-     -k /Library/Keychains/System.keychain deploy/mac2/certs/ca.crt
-
-# 3) One script per machine:
-#    Mac 1:  ./scripts/mac1-dns.sh          (starts dnsmasq :53)
-#    Mac 2:  ./scripts/mac2-edge.sh         (starts nginx :443/:8443)
-#    Mac 3:  ./scripts/mac3-backend-a.sh    (Backend A :3001)
-#    Mac 4:  ./scripts/mac4-backend-b.sh    (Backend B :3002)
-
-# 4) On a client Mac: point DNS at Mac 1 (script prints the exact commands)
-sudo networksetup -setdnsservers Wi-Fi <MAC1_IP>
-sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
-
-# 5) Prove the Phase-1 gate, then rehearse the graded sequence:
-./scripts/verify.sh            # every check must PASS
-./scripts/demo-phase1.sh       # the 8 graded demo steps, live
-./scripts/collect-evidence.sh  # fills evidence/ automatically
+python3 backends/backend.py --name B --port 3002
 ```
 
-Step-by-step hand-holding (including Task A network inventory and Task G
-Wireshark captures): [`docs/SETUP_GUIDE_PHASE1.md`](docs/SETUP_GUIDE_PHASE1.md).
-Phase 2 extensions A–F: [`docs/SETUP_GUIDE_PHASE2.md`](docs/SETUP_GUIDE_PHASE2.md).
+### Backend Endpoints:
+| Endpoint | Method | Response / Purpose |
+|---|---|---|
+| `/` | `GET` | Welcome JSON confirming backend status and operational details |
+| `/api/status` | `GET` | Required contract: `{"backend": "A"|"B", "status": "ok"}` + `Cache-Control` + `ETag` + `X-Backend` header |
+| `/api/cached` or `/api/data` | `GET` | Cacheable resource: `Cache-Control: public, max-age=60`, `ETag`. Supports conditional requests (`If-None-Match`) returning `304 Not Modified` |
+| `/health` | `GET` | Liveness check returning `200 ok` |
+| `/slow?seconds=5` | `GET` | Artificial delay endpoint to demonstrate edge proxy timeouts and failover |
 
-## Changing team name, IPs, or ports
+---
 
-Everything derives from `config.env`. Edit it, re-run
-`./scripts/configure.sh`, then restart the affected services
-(DNS records need a **full** dnsmasq restart; nginx: `-s reload`).
-Certificates cover `*.team1.test` via SAN wildcard, so a team-name change
-only requires re-running `./certs/make-ca-and-cert.sh` and re-trusting the
-new CA on clients.
+## 4. How to Run the Infrastructure Services
 
-## Mapping to the brief
+### 1. Private DNS Server (`dnsmasq` on Mac 1):
+```bash
+# Start dnsmasq in foreground with query logging:
+sudo dnsmasq --conf-file=deploy/mac1/dnsmasq.conf -d
+```
+*Listens on port 53/UDP, resolving `app.team1.test` and `api.team1.test` to Mac 2's Edge IP.*
 
-| Brief item | Where it lives |
+### 2. Edge Reverse Proxy & Load Balancer (`nginx` on Mac 2):
+```bash
+# Start nginx with project configuration:
+sudo nginx -c $(pwd)/deploy/mac2/nginx.conf
+
+# To reload configuration:
+sudo nginx -c $(pwd)/deploy/mac2/nginx.conf -s reload
+
+# To stop nginx:
+sudo nginx -c $(pwd)/deploy/mac2/nginx.conf -s stop
+```
+*Listens on ports 443 and 8443 (HTTPS) with TLS termination and load balances across Backend A and Backend B.*
+
+---
+
+## 5. Client Verification & Testing Commands
+
+Run these verification commands from any client machine (Mac 1 or Mac 4) connected to the private LAN:
+
+### 1. Test Private DNS Resolution:
+```bash
+# Query the private DNS server directly:
+dig @10.7.14.12 app.team1.test +noall +answer
+
+# Verify the domain does NOT exist on the public internet (proves it is private):
+dig @8.8.8.8 app.team1.test
+```
+
+### 2. Test HTTPS and TLS Termination (Strict Validation - No `-k` flag!):
+```bash
+# Inspect the TLS handshake and certificate chain:
+curl -v https://app.team1.test/api/status
+```
+
+### 3. Test Round-Robin Load Balancing:
+```bash
+# Send repeated requests and observe alternating X-Backend headers:
+for i in {1..6}; do curl -sI https://app.team1.test/api/status | grep -i "X-Backend"; done
+```
+*Expected Output:*
+```text
+X-Backend: A
+X-Backend: B
+X-Backend: A
+X-Backend: B
+X-Backend: A
+X-Backend: B
+```
+
+### 4. Test HTTP Caching & Conditional Requests (304 Not Modified):
+```bash
+# Initial request (returns 200 OK, Cache-Control: max-age=60, and ETag):
+curl -i https://app.team1.test/api/data
+
+# Conditional request using If-None-Match (returns 304 Not Modified with zero body bytes):
+curl -i -H 'If-None-Match: "v1-static-hash"' https://app.team1.test/api/data
+```
+
+---
+
+## 6. Required Failure Demonstration (Option A — Backend Failover)
+
+To demonstrate network layer isolation and high-availability load balancer failover:
+
+1. **Before State:** Execute curl requests to show traffic alternating between `A` and `B`:
+   ```bash
+   for i in {1..4}; do curl -sI https://app.team1.test/api/status | grep -i "X-Backend"; done
+   ```
+2. **Trigger Failure:** Terminate Backend A on Mac 3 by pressing `Ctrl + C`.
+3. **After State:** Send requests again from the client:
+   ```bash
+   for i in {1..6}; do curl -sI https://app.team1.test/api/status | grep -i "X-Backend"; done
+   ```
+   *Result:* All requests continue to succeed with `HTTP 200 OK` and are served exclusively by `X-Backend: B`. Zero requests are dropped.
+4. **Network Explanation:**
+   - **Layer affected:** Application layer (Backend server down).
+   - **Transport behavior:** The edge attempts a TCP connection to `10.7.20.87:3001`, which is refused.
+   - **Recovery mechanism:** Nginx marks Backend A as temporarily unavailable (`max_fails=2`, `fail_timeout=10s`) and automatically retries the request on Backend B via `proxy_next_upstream`, shielding the client from downtime.
+5. **Restoration:** Restart Backend A on Mac 3. After the 10-second timeout, Nginx seamlessly re-adds Backend A to the active round-robin pool.
+
+---
+
+## 7. Mapping to Computer Networks Course Topics
+
+| Course Topic | Project Implementation & Proof |
 |---|---|
-| Task A — LAN + topology | `docs/SETUP_GUIDE_PHASE1.md` §A, `docs/topology.svg`, demo step 2 |
-| Task B — private DNS | `templates/dnsmasq.conf.tmpl`, `scripts/mac1-dns.sh` |
-| Task C — two backends | `backends/backend.py` (`/`, `/api/status`, `X-Backend`) |
-| Task D — edge + LB | `templates/nginx.conf.tmpl` (round-robin upstream) |
-| Task E — HTTPS/TLS | `certs/`, nginx `ssl` block, `certs/README.md` (handshake notes) |
-| Task F — caching/304 | `backend.py` `/api/cached`, demo step 7 |
-| Task G — packet flow | `scripts/collect-evidence.sh`, `docs/EVIDENCE_CHECKLIST.md` |
-| Failure demos (6.3) | `scripts/failures.sh` |
-| Ext A — backup DNS | `templates/dnsmasq-backup.conf.tmpl`, `scripts/start-backup-dns.sh` |
-| Ext B — TTL/cutover | `local-ttl` + `demo-phase2.sh b` |
-| Ext C — isolation | `templates/backend-isolation.pf.conf.tmpl`, firewall scripts |
-| Ext D — HA failover | nginx `max_fails`/`proxy_next_upstream`, `demo-phase2.sh d` |
-| Ext E — edge migration | `demo-phase2.sh e`, wildcard SAN cert, `X-Edge-IP` header |
-| Ext F — diagnosis | `scripts/diagnose.sh`, `docs/SETUP_GUIDE_PHASE2.md` §F |
-| Viva preparation | `docs/VIVA_PREP.md` (60+ Q&A) |
-| Final report | `docs/PHASE2_REPORT_TEMPLATE.md` |
-
-## Verified
-
-The complete platform — DNS resolution → TCP → TLS with local-CA validation →
-round-robin load balancing → cache headers/304 → backend failover → 502
-boundary → backup-DNS failover → TTL record change — was executed
-end-to-end in the single-machine simulation. Transcripts:
-[`docs/SIMULATION_RESULTS.md`](docs/SIMULATION_RESULTS.md).
+| **OSI vs TCP/IP Models** | Direct mapping: DNS (Application/UDP), HTTP (Application/TCP), TLS (Session/Security), TCP (Transport), IP (Network), Ethernet/Wi-Fi (Link). |
+| **DNS & Name Resolution** | Private `.test` namespace, UDP Port 53 queries, A records, and TTL caching behavior via `dnsmasq`. |
+| **Transport Layer (TCP/UDP)** | TCP 3-way handshake (`SYN`, `SYN-ACK`, `ACK`), connection state, sequence/acknowledgement tracking, and socket pairs (ephemeral client port $\leftrightarrow$ well-known service port). |
+| **Network Security & TLS** | TLS 1.2/1.3 cryptographic handshake, cipher suite negotiation, Public Key Infrastructure (PKI) with custom Root CA, and TLS termination at the edge proxy. |
+| **HTTP Protocols & Caching** | HTTP/1.1 keep-alive connections, `Cache-Control: max-age=60`, `ETag` validators, and conditional `304 Not Modified` revalidation. |
+| **Load Balancing & Resilience** | Reverse proxy architecture, round-robin load distribution, passive health checking (`max_fails`, `fail_timeout`), and upstream failover (`proxy_next_upstream`). |
