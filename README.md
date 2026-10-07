@@ -8,12 +8,12 @@ A hands-on, team-based local networking project designed to demonstrate how real
 
 ## 1. Team Members & Roles
 
-| Machine | Assigned Role | Services Running | Course / Cloud Equivalent |
-|---|---|---|---|
-| **Mac 1** | **Private DNS Server + Client** | `dnsmasq` (Port 53/UDP), `dig`, `curl`, browser | Managed DNS Service (e.g., AWS Route 53) |
-| **Mac 2** | **Edge Reverse Proxy + Load Balancer** | `nginx` (Ports 443 & 8443/TCP), TLS Termination | Cloud Load Balancer / API Gateway / CDN Edge |
-| **Mac 3** | **Backend Server A** | Python REST Backend (Port 3001/TCP) | Application Server Instance A |
-| **Mac 4** | **Backend Server B + Client** | Python REST Backend (Port 3002/TCP), `curl`, browser | Application Server Instance B + Client |
+| Machine | Name | Enrollment Number | Assigned Role | Services Running | Course / Cloud Equivalent |
+|---|---|---|---|---|---|
+| **Mac 1** |Rudra Pratap Singh Choudhary  |2401010394  | **Private DNS Server + Client** | `dnsmasq` (Port 53/UDP), `dig`, `curl`, browser | Managed DNS Service (e.g., AWS Route 53) |
+| **Mac 2** |Somraj Nandi  |2401020070  | **Edge Reverse Proxy + Load Balancer** | `nginx` (Ports 443 & 8443/TCP), TLS Termination | Cloud Load Balancer / API Gateway / CDN Edge |
+| **Mac 3** |  |  | **Backend Server A** | Python REST Backend (Port 3001/TCP) | Application Server Instance A |
+| **Mac 4** |  |  | **Backend Server B + Client** | Python REST Backend (Port 3002/TCP), `curl`, browser | Application Server Instance B + Client |
 
 ---
 
