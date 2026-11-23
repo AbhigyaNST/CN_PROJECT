@@ -39,6 +39,7 @@ if [ "$LOCAL" = "1" ]; then
 else
     BACKUP_DNS_IP="$DNS_BACKUP_IP"
     EDGE_IP="$MAC2_IP"
+    CURL_RESOLVE="--resolve app.${DOMAIN}:${HTTPS_PORT}:${EDGE_IP} --resolve app.${DOMAIN}:${HTTPS_ALT_PORT}:${EDGE_IP} --resolve api.${DOMAIN}:${HTTPS_PORT}:${EDGE_IP}"
     PIDDIR="$RUN_DIR"
 fi
 

@@ -1,0 +1,41 @@
+# Extension E: DNS-based edge cutover — X-Edge-IP shows old→new across the TTL window
+# collected: Mon Nov 23 23:53:30 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# Team: team1  Domain: team1.test
+# ----------------------------------------------------------
+=== PRE-CONDITION: Standby edge running on Mac 3 ===
+  On Mac 3 (separate tab from Backend A):  ./scripts/mac2-edge.sh
+  nginx will warn 'this machine does not have MAC2_IP' — EXPECTED.
+  Its cert SAN covers *.team1.test so it validates by name (SNI).
+
+=== CURRENT edge-status header (before cutover) ===
+$ curl -sD - -o /dev/null https://app.team1.test/edge-status | grep -i x-edge-ip
+  X-Edge-IP: 10.7.31.44
+
+=== STEP 1: Flip the DNS record on Mac 1 ===
+  Edit deploy/mac1/dnsmasq.conf:
+    Change:  address=/app.team1.test/10.7.31.44
+    To:      address=/app.team1.test/10.7.27.203
+  Then:  sudo brew services restart dnsmasq
+
+=== STEP 2: Observe the TTL effect ===
+  Clients with CACHED answer: X-Edge-IP still 10.7.31.44 for up to 30s
+  After TTL expiry OR manual flush → X-Edge-IP: 10.7.27.203
+
+  Manual flush:  sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
+
+  Watch per-request:  curl -sD - -o /dev/null https://app.team1.test/edge-status | grep -i x-edge-ip
+
+=== STEP 3: Old edge (Mac 2) can now be stopped safely ===
+  sudo nginx -c /tmp/team1-run/nginx.conf -s stop
+  Service continues through Mac 3 (the standby is now the primary).
+
+=== STEP 4: Rollback ===
+  Restore dnsmasq.conf: address=/app.team1.test/10.7.31.44, restart dnsmasq
+  Optionally stop standby nginx on Mac 3:
+    sudo nginx -c /tmp/team1-run/nginx.conf -s stop
+
+EXPLANATION:
+  DNS decides WHERE traffic goes. Migration window = TTL (why ops
+  lower TTL before planned cutovers). X-Edge-IP ($server_addr) makes
+  the moment of cutover observable per request. Cloud analogue:
+  Route 53 failover/weighted records + blue-green deployments.

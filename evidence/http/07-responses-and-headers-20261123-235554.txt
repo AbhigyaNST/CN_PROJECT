@@ -1,0 +1,8 @@
+# status JSON with X-Backend, welcome JSON, and HTTP->HTTPS 301
+# collected: Mon Nov 23 23:55:55 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# ----------------------------------------------------------
+$ curl -sD - https://app.team1.test/api/status
+
+$ curl -sD - https://app.team1.test/
+
+$ curl -sI http://app.team1.test/   (redirect)

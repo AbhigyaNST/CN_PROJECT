@@ -1,0 +1,36 @@
+# Extension C: pf isolation — edge allowed, clients blocked, service end-to-end OK
+# collected: Mon Nov 23 23:53:23 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# Team: team1  Domain: team1.test
+# ----------------------------------------------------------
+=== STEP 1: Apply pf rules on BOTH backend Macs (Mac 3 + Mac 4) ===
+  Run on Mac 3:  sudo ./scripts/firewall-apply.sh
+  Run on Mac 4:  sudo ./scripts/firewall-apply.sh
+
+=== STEP 2: From Mac 2 (edge) — MUST WORK ===
+$ curl --max-time 3 http://10.7.27.203:3001/health  (from edge)
+  Expected: 'ok' (edge is allowed)
+
+=== STEP 3: From Mac 1 or Mac 4 (clients) — MUST TIME OUT ===
+$ curl --max-time 3 http://10.7.27.203:3001/health  (from client)
+  Probe result from this machine: OPEN
+
+$ curl --max-time 3 http://10.7.29.115:3002/health  (from client)
+  Probe result from this machine: OPEN
+
+=== STEP 4: End-to-end service still works through the edge ===
+$ curl https://app.team1.test/api/status
+  HTTP/2 200 
+  x-backend: A
+  x-backend-host: Abhigyas-MacBook-Pro.local
+  x-edge: team1-edge
+  x-edge-ip: 10.7.31.44
+
+=== ROLLBACK (run on Mac 3 + Mac 4 after demo) ===
+  sudo ./scripts/firewall-rollback.sh
+
+EXPLANATION:
+  pf 'block drop' silently discards packets → client retransmits SYNs
+  until timeout. Nothing listening → RST → instant 'connection refused'.
+  Timeout IS the firewall fingerprint. pf is stateful: 'pass' creates
+  state, so edge→backend replies flow back without a separate outbound rule.
+  Cloud analogue: security groups / NACLs (private subnet pattern).

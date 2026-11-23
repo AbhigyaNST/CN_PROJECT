@@ -1,0 +1,9 @@
+# curl -v showing CApath/subject/issuer/ALPN and encrypted transfer
+# collected: Mon Nov 23 23:55:55 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# ----------------------------------------------------------
+$ curl -v https://app.team1.test/api/status   (TLS negotiation lines)
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Could not resolve host: app.team1.test
+* Closing connection
+curl: (6) Could not resolve host: app.team1.test

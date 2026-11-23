@@ -1,0 +1,8 @@
+# Cache-Control/ETag headers + conditional request returning 304
+# collected: Mon Nov 23 23:55:55 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# ----------------------------------------------------------
+$ curl -sI https://app.team1.test/api/cached
+
+$ curl -sI -H 'If-None-Match: ' https://app.team1.test/api/cached
+
+(second response = 304 Not Modified: headers only, zero body bytes re-sent)

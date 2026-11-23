@@ -116,7 +116,8 @@ fi
 step "5/6 — HTTP: what does the edge return?"
 BASE="https://${TARGET_HOST}"
 [ "$TARGET_PORT" != "443" ] && BASE="${BASE}:${TARGET_PORT}"
-CODE="$(curl -sS -o "$TMPD/diag-body" -w '%{http_code}' --max-time 6 $CURL_TLS_OPTS "$BASE/api/status" 2>/dev/null || echo 000)"
+RESOLVE_FLAG="--resolve ${TARGET_HOST}:${TARGET_PORT}:${EDGE_IP}"
+CODE="$(curl -sS -o "$TMPD/diag-body" -w '%{http_code}' --max-time 6 $CURL_TLS_OPTS $RESOLVE_FLAG "$BASE/api/status" 2>/dev/null || echo 000)"
 rm -f "$TMPD/diag-body"
 case "$CODE" in
     200) verdict ok "HTTP" "GET ${BASE}/api/status -> 200 — the full stack works" ;;

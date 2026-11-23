@@ -21,6 +21,7 @@ if [ "$LOCAL" = "1" ]; then
     DNSMASQ_BIN="$(command -v dnsmasq || echo /usr/sbin/dnsmasq)"
 else
     EDGE_IP="$MAC2_IP"; BACKUP_DNS="$DNS_BACKUP_IP"
+    [ -z "${CURL_RESOLVE:-}" ] && CURL_RESOLVE="--resolve app.${DOMAIN}:${HTTPS_PORT}:${EDGE_IP} --resolve app.${DOMAIN}:${HTTPS_ALT_PORT}:${EDGE_IP}"
 fi
 getb() { curl -sD - -o /dev/null --max-time 6 $CURL_TLS_OPTS $CURL_RESOLVE "${EDGE_BASE}/api/status" 2>/dev/null | tr -d '\r' | awk -F': ' 'tolower($1)=="x-backend"{print $2}'; }
 restart_local_dns() { sudo kill "$(cat "$PIDDIR/dnsmasq.pid")" 2>/dev/null; sleep 1; sudo "$DNSMASQ_BIN" --conf-file="$LCONF_SRC" --no-resolv; sleep 1; }

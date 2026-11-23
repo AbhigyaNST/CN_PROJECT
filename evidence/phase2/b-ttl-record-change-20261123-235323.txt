@@ -1,0 +1,39 @@
+# Extension B: TTL countdown + record change + cache flush effect
+# collected: Mon Nov 23 23:53:23 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# Team: team1  Domain: team1.test
+# ----------------------------------------------------------
+=== STEP 1: TTL is visible in every answer ===
+$ dig @10.7.11.30 app.team1.test +noall +answer
+  app.team1.test.		30	IN	A	10.7.31.44
+
+$ dig @10.7.11.30 api.team1.test +noall +answer
+  api.team1.test.		30	IN	A	10.7.31.44
+
+  TTL configured: 30s
+
+=== STEP 2: Client-side cache countdown (mDNSResponder) ===
+$ dscacheutil -q host -a name app.team1.test
+
+=== STEP 3: Record change demo ===
+  On Mac 1 — edit deploy/mac1/dnsmasq.conf:
+    Change:  address=/app.team1.test/10.7.31.44
+    To:      address=/app.team1.test/10.255.255.1    # bogus IP
+  Then:  sudo brew services restart dnsmasq
+
+=== STEP 4: Old IP still cached (TTL window) ===
+$ dscacheutil -q host -a name app.team1.test   (run after record change)
+  Expected: still shows OLD IP (10.7.31.44) until TTL expires
+
+=== STEP 5: Manual cache flush forces immediate update ===
+$ sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
+$ dscacheutil -q host -a name app.team1.test   (now shows NEW IP)
+
+=== STEP 6: Restore ===
+  On Mac 1: revert dnsmasq.conf to 10.7.31.44, restart dnsmasq
+
+EXPLANATION:
+  TTL = contract between authority and caches.
+  Production cutover: lower TTL hours before migration (e.g. 300→30),
+  flip the record, wait one TTL window for traffic to drain, then
+  decommission the old target. Manual flush = per-machine override only
+  (you cannot flush the internet's caches — hence the drain window).

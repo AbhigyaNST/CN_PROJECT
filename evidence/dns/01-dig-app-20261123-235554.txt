@@ -1,0 +1,25 @@
+# dig app.team1.test against primary DNS (answer must be the EDGE ip 10.7.31.44, TTL 30)
+# collected: Mon Nov 23 23:55:54 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# ----------------------------------------------------------
+$ dig @10.7.11.30 app.team1.test
+
+; <<>> DiG 9.20.18 <<>> @10.7.11.30 -p 53 app.team1.test A
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 12910
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;app.team1.test.			IN	A
+
+;; ANSWER SECTION:
+app.team1.test.		30	IN	A	10.7.31.44
+
+;; Query time: 5 msec
+;; SERVER: 10.7.11.30#53(10.7.11.30) (UDP)
+;; WHEN: Mon Nov 23 23:55:54 IST 2026
+;; MSG SIZE  rcvd: 59
+

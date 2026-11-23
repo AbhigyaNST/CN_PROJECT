@@ -1,0 +1,103 @@
+# full TLS handshake summary + certificate chain as the client sees it
+# collected: Mon Nov 23 23:55:55 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# ----------------------------------------------------------
+$ openssl s_client -connect 10.7.31.44:443 -servername app.team1.test -CAfile ca.crt
+Connecting to 10.7.31.44
+depth=1 O=team1 CN Course Project, CN=team1 Local Root CA
+verify return:1
+depth=0 O=team1 CN Course Project, CN=app.team1.test
+verify return:1
+CONNECTED(00000003)
+---
+Certificate chain
+ 0 s:O=team1 CN Course Project, CN=app.team1.test
+   i:O=team1 CN Course Project, CN=team1 Local Root CA
+   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption
+   v:NotBefore: Nov 23 17:26:12 2026 GMT; NotAfter: Feb 25 17:26:12 2029 GMT
+-----BEGIN CERTIFICATE-----
+MIIEzjCCAragAwIBAgIUEWMkt3p/9py3nUuQIJVNN8RFogAwDQYJKoZIhvcNAQEL
+BQAwQDEgMB4GA1UECgwXdGVhbTEgQ04gQ291cnNlIFByb2plY3QxHDAaBgNVBAMM
+E3RlYW0xIExvY2FsIFJvb3QgQ0EwHhcNMjYxMTIzMTcyNjEyWhcNMjkwMjI1MTcy
+NjEyWjA7MSAwHgYDVQQKDBd0ZWFtMSBDTiBDb3Vyc2UgUHJvamVjdDEXMBUGA1UE
+AwwOYXBwLnRlYW0xLnRlc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+AQCMzLVE9yMYCyFkSWsa1XtI91PFI0To7FF2KyaUL6IrnDntZItvtJbKtCVISzsS
++aN2Gx49ssyx5Ej0DuvpAx81lBS2nJ9jIE9YLajOPaR6S84TjWysHaRbWGPWLz5b
+A415sM5iz+2NyWH5RM3xkDlREuAb5MxY+Tu2f4INxnuI/Lc3WPtxUdPWShv5W+6O
++scVZ1vli55Lm18IwplZQrE3JMTiYIfBDps6kmshzGfOYhevog59lWWRlOKsapxD
+x3eiiYVVHJe/WJWabvVvySlQPSddai3Meq6HgxB1i8vJJ+iEyYRah3Seo76836J2
+DCIoCCqp1t/DMSHYhChxamPxAgMBAAGjgcQwgcEwCQYDVR0TBAIwADAOBgNVHQ8B
+Af8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwTwYDVR0RBEgwRoIOYXBwLnRl
+YW0xLnRlc3SCDmFwaS50ZWFtMS50ZXN0ggwqLnRlYW0xLnRlc3SCCnRlYW0xLnRl
+c3SHBAoHHyyHBH8AAAEwHQYDVR0OBBYEFCtubQQeAtM2aIC3y+OZtJKJ6e3EMB8G
+A1UdIwQYMBaAFB/HLFByoFUwOGTg2T8sJ7WorTgZMA0GCSqGSIb3DQEBCwUAA4IC
+AQAmklHcklmZefFa2hqQ45uTLJrpsKVp5Xoh7NaIgGqR7i+Aden6dpVmAIu1fXba
+mLPckRTwIyiWJojhE9DqVJednLjiMYiGprD+84opsPuBHeYd9PJ2enzGEp5ry2HK
+5H6baB8Lx2QJvSJ/B8j462uFyh8ggb0WDy+NeYtSVV3IXvnH1w1heJ48TupwWpXP
+h+2H01aNemnG9FtiZapT1gW/wpEeuNNicvU1kIEO9rtCur+RVcgUfMKil59iEcRG
+f6BGJFwjUSAuk0ysHjexneh5oGGgL+qclavSnRsV0cbJhitC+wIrAqyemFK+ta9U
+U4L5NuDvRJk10u+9Zs3tqFK034B1ylXqA1DEyNvYfb++uWAbFiaCOz24Uh48Aeh2
+pw9cAm83vmNI3u+/q/IyQMc30Dqi0NsgGVBf4WNnmZ7KVb7rp/BO4hfdJ87llvs5
+uZsvuZadwDufqjzED5RP8N+rb+vOYaCt+Lw3CwqSxuIUryJR2PP8ND+CMl71TJog
+X53/66I1p9LeAtFQ+281yElQtf/ohRzgEA9ouoOhjfpv4Z3cpUffptIj/NHkFo3m
+WfqNGQyfYEFsOhoaH/sJYrwl8UinJ3Itgm/YajUCHpkoUZNrPIIexOKTEd+yQmkl
+OGzDMLbSnj7X+JDNepqNCrw3TZAfT69HgkOA6+3snR7IpQ==
+-----END CERTIFICATE-----
+ 1 s:O=team1 CN Course Project, CN=team1 Local Root CA
+   i:O=team1 CN Course Project, CN=team1 Local Root CA
+   a:PKEY: RSA, 4096 (bit); sigalg: sha256WithRSAEncryption
+   v:NotBefore: Nov 23 17:26:12 2026 GMT; NotAfter: Nov 22 17:26:12 2031 GMT
+-----BEGIN CERTIFICATE-----
+MIIFYTCCA0mgAwIBAgIUYh2bdwEFiA+IqiAm9jRw1k+yV3swDQYJKoZIhvcNAQEL
+BQAwQDEgMB4GA1UECgwXdGVhbTEgQ04gQ291cnNlIFByb2plY3QxHDAaBgNVBAMM
+E3RlYW0xIExvY2FsIFJvb3QgQ0EwHhcNMjYxMTIzMTcyNjEyWhcNMzExMTIyMTcy
+NjEyWjBAMSAwHgYDVQQKDBd0ZWFtMSBDTiBDb3Vyc2UgUHJvamVjdDEcMBoGA1UE
+AwwTdGVhbTEgTG9jYWwgUm9vdCBDQTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCC
+AgoCggIBAJj3aFs5PiIJicemwStiqMhI7Y3mUevW85NRlmfP6D2zEkagAefLp9jI
+Bg1Ad0CJ77NX+f3XJRx5L3a5Bg1MgdeyCma6drD9SGeqadcleKdFqJwrjkVYjEqY
+ucByoLKjsLjACmQHkpaFmVXHgGVaOYPtp6hHdkmGKOAPUAHPp6LAjE21IdmL+Ytc
+DzAz6ARBUp4ja2lTocfC3mDlgijHZxTIInLblAsGunY0X+QkevDHhyb+P5kGBaYx
+vDHauluR1xw95M/AoW6ceuaO4LDel03dfVhw7su0v6t1bMzdHACVpQSph8veKmR3
+MZOwFJgEhjCwfFHzNjRaOlT8hUCyfsLjAHJ7/i5IxolT9l/AT8gmuhk+WudQtNg1
+RJolDRtNsHa+i5epxOXBRDeDipMRWo9wnZjW6HqXOhiI6foTo5GDcPE6Q1E248Z3
+Lf4R4xAyXoGScHLJ4+QuaW+rgANVaMetXLXiGQ2tVjoidtLxdkNm+ZbhtejrzR+1
+12xPR4XTA0MB3lCf7X+2MS/mftRa2pd9CUO+SieAHdzsZhLmlH9zlVHqQ1DbsRVy
+KmlSdgGuGymQXHRZJAR2zhUizDQdbKH2A8/HOxz/dy/2cVkPlm5TtZNE/17lhELq
+wQuRCKuHRHSCkWcOAxdc61fXKuNFlv6Lw3sAcRf9Yq0S0EF7eRxdAgMBAAGjUzBR
+MB0GA1UdDgQWBBQfxyxQcqBVMDhk4Nk/LCe1qK04GTAfBgNVHSMEGDAWgBQfxyxQ
+cqBVMDhk4Nk/LCe1qK04GTAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUA
+A4ICAQBSA2HyHh38ctHLlJ7Y07oh4K+1UFnBd591p/OuC7sAPZ18jNVdA9lOVHMM
+7XdiXk8OuQHNrM6k9XgwF1NnMHy68gXftDqpQTQyKw9LGlE8kAc7XZ3wUKv0w1Bg
+muVBg1/12MSH4kRkzx/SOLOQoSSOfTK7pa/PPecw8BSFi2BoZhbuvPGgFMs4eBWJ
+MMnuOkXwf9eZ0BpzDtuP0Zp8tDcUMKyLqMPFAer8AiNKjC4M0Oh8jQQWkuM7lB6t
+8ErzyidriuqnAihSzcMzbJ9aWO829YGpIJo6PPFC5w27gTBHSHskjjb8/QlL28ii
++E4wswZiUk2zcm/uSBA2ec80GAZYv18FNWDspVEg4Nus36yejRJ2g9jQha0uWguA
+pi4sRYQyF9WqSGJQwZbOKcETmCrtHqYh6jZXR1YF9uj9Uel3blIe99fmCsK7hMNJ
+7Hk4ylpB8Hd+Z+uyfe8ANTsTgItvUQR7qIrdrok88mKpicoTyCXq/095KTk6hI5t
+0JL1GJVeLojblR05DK8vFZ5/9JbvJDUtnVMbB/5rlldpkwE3L3Vl0YBLuz60R2fy
+HUWLtHcYWOrcawQ5cqzic1seR2gvRPMPLlZyqQ1Hp9v6fSg/+byjRZD3sfB2P5wh
+KHMyDxceaa1FNTqrljQU3N08E8Ab+pUCpLiZ+nr3BfunbwU2bQ==
+-----END CERTIFICATE-----
+---
+Server certificate
+subject=O=team1 CN Course Project, CN=app.team1.test
+issuer=O=team1 CN Course Project, CN=team1 Local Root CA
+---
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature type: rsa_pss_rsae_sha256
+Negotiated TLS1.3 group: X25519MLKEM768
+---
+SSL handshake has read 4268 bytes and written 1625 bytes
+Verification: OK
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Protocol: TLSv1.3
+Server public key is 2048 bit
+This TLS version forbids renegotiation.
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify return code: 0 (ok)
+---
+DONE

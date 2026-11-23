@@ -1,0 +1,3 @@
+# dnsmasq server-side query log (queries + forwarded + answers)
+# collected: Mon Nov 23 23:55:54 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# ----------------------------------------------------------

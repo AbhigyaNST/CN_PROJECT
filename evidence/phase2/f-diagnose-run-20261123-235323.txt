@@ -1,0 +1,56 @@
+# Extension F: diagnose.sh clean baseline + injected-fault map
+# collected: Mon Nov 23 23:53:30 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# Team: team1  Domain: team1.test
+# ----------------------------------------------------------
+=== BASELINE: everything should PASS before the evaluator injects a fault ===
+
+============================================================
+ DIAGNOSING: https://app.team1.test:443
+ (method: DNS -> IP -> TCP -> TLS -> HTTP -> backends)
+============================================================
+
+==> 1/6 — DNS: can the name be resolved?
+  [PASS] DNS: @10.7.11.30 answered: app.team1.test -> 10.7.31.44
+
+==> 2/6 — IP: is 10.7.31.44 reachable at all?
+  [PASS] IP: ping 10.7.31.44 succeeds (ICMP across the LAN works)
+
+==> 3/6 — TCP: is port 443 open on 10.7.31.44?
+  [PASS] TCP: three-way handshake to 10.7.31.44:443 completes
+
+==> 4/6 — TLS: does the handshake succeed and the certificate validate?
+  [PASS] TLS: handshake complete, chain verifies against team CA
+       0 s:O=team1 CN Course Project, CN=app.team1.test
+         i:O=team1 CN Course Project, CN=team1 Local Root CA
+
+==> 5/6 — HTTP: what does the edge return?
+  [PASS] HTTP: GET https://app.team1.test/api/status -> 200 — the full stack works
+
+==> 6/6 — Backends: direct health probes (edge -> backend hops)
+  [PASS] Backend A: http://10.7.27.203:3001/health -> 200
+  [PASS] Backend B: http://10.7.29.115:3002/health -> 200
+
+============================================================
+VERDICT: every layer healthy — system fully operational.
+============================================================
+
+=== Layer-by-layer fault map (know this cold!) ===
+
+  INJECTED FAULT                    FIRST BROKEN LAYER   SIGNATURE
+  dnsmasq stopped                   DNS                  'could not resolve host'
+  record repointed                  DNS                  resolves, then connect to WRONG IP
+  client resolver changed           DNS (client-side)    'dig @Mac1' fine, plain 'dig' fails
+  nginx stopped                     TCP                  connection refused on :443
+  nginx moved to 8443 only              TCP                  443 refused, 8443 works
+  cert replaced/expired             TLS                  handshake / verify failure only
+  one backend killed                (none — LB absorbs!) 200 from the surviving backend
+  both backends killed              HTTP                 502 at edge, /edge-status still 200
+  pf isolation ON + probe from client (expected)         backend ports time out; edge works
+
+=== Narration template (say this during diagnosis) ===
+  'Resolution works and returns X, so the DNS layer is healthy.'
+  'TCP to X:443 completes, so transport is fine.'
+  'TLS verifies, so session security is fine.'
+  'Edge returns 502 → fault is below the edge.'
+  'Probing backends from Mac 2: A refusing → Backend A is down.'
+  'Restarting A restores round-robin within fail_timeout.'

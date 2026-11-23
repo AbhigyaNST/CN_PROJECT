@@ -1,0 +1,34 @@
+# api record + nslookup cross-check
+# collected: Mon Nov 23 23:55:54 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# ----------------------------------------------------------
+$ dig @10.7.11.30 api.team1.test
+
+; <<>> DiG 9.20.18 <<>> @10.7.11.30 -p 53 api.team1.test A
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 38406
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;api.team1.test.			IN	A
+
+;; ANSWER SECTION:
+api.team1.test.		30	IN	A	10.7.31.44
+
+;; Query time: 3 msec
+;; SERVER: 10.7.11.30#53(10.7.11.30) (UDP)
+;; WHEN: Mon Nov 23 23:55:54 IST 2026
+;; MSG SIZE  rcvd: 59
+
+
+$ nslookup app.team1.test 10.7.11.30
+Server:		10.7.11.30
+Address:	10.7.11.30#53
+
+Name:	app.team1.test
+Address: 10.7.31.44
+** server can't find app.team1.test: NXDOMAIN
+

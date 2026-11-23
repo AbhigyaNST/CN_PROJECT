@@ -1,0 +1,73 @@
+# Extension A: backup DNS failover — primary killed, backup serves, service unaffected
+# collected: Mon Nov 23 23:53:23 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# Team: team1  Domain: team1.test
+# ----------------------------------------------------------
+=== STEP 1: Both resolvers serve identical records ===
+
+$ dig @10.7.11.30 app.team1.test +short   (PRIMARY)
+  10.7.31.44
+
+$ dig @10.7.27.203 app.team1.test +short   (BACKUP)
+  ;; communications error to 10.7.27.203#53: connection refused
+  ;; communications error to 10.7.27.203#53: connection refused
+  ;; communications error to 10.7.27.203#53: connection refused
+  
+  ; <<>> DiG 9.20.18 <<>> @10.7.27.203 -p 53 app.team1.test +short
+  ; (1 server found)
+  ;; global options: +cmd
+  ;; no servers could be reached
+  [WARN] Backup DNS not answering yet — run: ./scripts/start-backup-dns.sh
+
+$ scutil --dns | grep -A5 'resolver #1'    (client resolver order)
+  resolver #1
+    nameserver[0] : 10.7.11.30
+    nameserver[1] : 10.7.27.203
+    nameserver[2] : 8.8.8.8
+    flags    : Request A records
+    reach    : 0x00030002 (Reachable,Local Address,Directly Reachable Address)
+  --
+  resolver #2
+    domain   : local
+    options  : mdns
+    timeout  : 5
+    flags    : Request A records
+    reach    : 0x00000000 (Not Reachable)
+  --
+  resolver #3
+    domain   : 254.169.in-addr.arpa
+    options  : mdns
+    timeout  : 5
+    flags    : Request A records
+    reach    : 0x00000000 (Not Reachable)
+  --
+  resolver #4
+    domain   : 8.e.f.ip6.arpa
+    options  : mdns
+    timeout  : 5
+    flags    : Request A records
+    reach    : 0x00000000 (Not Reachable)
+  --
+  resolver #5
+    domain   : 9.e.f.ip6.arpa
+
+=== STEP 2: Service is up end-to-end before killing primary ===
+$ curl https://app.team1.test/api/status
+  HTTP/2 200 
+  x-backend: B
+  x-backend-host: Yashkumars-MacBook-Pro.local
+
+=== STEP 3: Kill primary DNS — service must continue via backup ===
+(Run on Mac 1:  sudo brew services stop dnsmasq)
+(Then re-run this section manually or use demo-phase2.sh a)
+
+=== Manual failover check — run after killing primary ===
+$ dig app.team1.test +short   (should resolve via backup)
+$ curl https://app.team1.test/api/status   (must return 200)
+
+=== RESTORE on Mac 1:  sudo brew services start dnsmasq ===
+
+EXPLANATION:
+  * DNS down → names stop resolving → 'could not resolve host'
+    (no connection is even attempted — the app servers are healthy)
+  * App server down → resolution works, TCP/TLS work, edge returns 502
+  These are DIFFERENT layers with DIFFERENT symptoms and fixes.

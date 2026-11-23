@@ -1,0 +1,4 @@
+# 12 consecutive requests showing which backend served each
+# collected: Mon Nov 23 23:55:55 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# ----------------------------------------------------------
+$ for i in $(seq 12); do curl -sD - -o /dev/null .../api/status | grep -i x-backend; done

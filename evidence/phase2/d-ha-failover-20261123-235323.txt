@@ -1,0 +1,59 @@
+# Extension D: Backend A killed → all traffic to B → restart → round-robin restored
+# collected: Mon Nov 23 23:53:24 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# Team: team1  Domain: team1.test
+# ----------------------------------------------------------
+=== PRE-CONDITION: Both backends running, alternating ===
+12 requests before killing Backend A:
+  request #1: X-Backend: B
+  request #2: X-Backend: A
+  request #3: X-Backend: B
+  request #4: X-Backend: A
+  request #5: X-Backend: B
+  request #6: X-Backend: A
+  request #7: X-Backend: B
+  request #8: X-Backend: A
+  request #9: X-Backend: B
+  request #10: X-Backend: A
+  request #11: X-Backend: B
+  request #12: X-Backend: A
+
+=== STEP 1: Kill Backend A (Ctrl+C on Mac 3 terminal) ===
+  Then run 10 requests — all should return X-Backend: B, all HTTP 200
+
+(Waiting 3s for you to have killed Backend A if running interactively)
+--- If Backend A is already down, the following proves failover ---
+10 requests while Backend A is (supposed to be) down:
+  request #1: X-Backend: B
+  request #2: X-Backend: A
+  request #3: X-Backend: B
+  request #4: X-Backend: A
+  request #5: X-Backend: B
+  request #6: X-Backend: A
+  request #7: X-Backend: B
+  request #8: X-Backend: A
+  request #9: X-Backend: B
+  request #10: X-Backend: A
+  RESULT: Both A and B responded — both backends appear to be UP
+  (Kill Backend A on Mac 3 and re-run this section)
+
+=== STEP 2: Edge logs show the failover (run on Mac 2) ===
+  tail /tmp/team1-run/nginx-error.log
+  Expected: 'connect() failed (111: Connection refused) while connecting to upstream'
+  nginx retries on the next upstream, then marks A down within fail_timeout.
+
+=== STEP 3: Restart Backend A — alternation restores in ~10s ===
+  Restart Backend A on Mac 3, then:
+  for i in $(seq 10); do curl ... | grep -i x-backend; done
+  Expected: A and B alternating again (round-robin restored).
+
+REMAINING SPOF: the EDGE itself (Mac 2). If nginx dies, DNS resolves
+but all connections are refused. Eliminating it requires Extension E
+(DNS-based failover) or keepalived/VRRP (floating VIP). Cloud analogue:
+managed ALBs are multi-AZ by construction.
+
+EXPLANATION:
+  Mechanism: passive health checking + proxy_next_upstream.
+  After max_fails=2 errors within fail_timeout=10s, the backend is
+  temporarily removed from rotation. It re-enters after fail_timeout.
+  Active probes (health_check in nginx Plus) would detect idle failures
+  faster without sacrificing real requests — a valid upgrade path.

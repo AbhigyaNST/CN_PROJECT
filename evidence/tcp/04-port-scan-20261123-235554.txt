@@ -1,0 +1,11 @@
+# well-known service ports vs backend ports, probed from the client
+# collected: Mon Nov 23 23:55:54 IST 2026 from Rudras-MacBook-Pro.local (10.7.11.30)
+# ----------------------------------------------------------
+Edge ports reachable from this client:
+  tcp 10.7.31.44:443 -> OPEN
+  tcp 10.7.31.44:8443 -> OPEN
+  tcp 10.7.31.44:80 -> OPEN
+
+Backend ports (only relevant from the edge; Phase 2 isolation may block):
+  tcp 10.7.27.203:3001 -> OPEN
+  tcp 10.7.29.115:3002 -> OPEN
