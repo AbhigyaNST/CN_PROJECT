@@ -29,10 +29,10 @@ recorded inventory.
 
    | Machine | IPv4 | Mask | Gateway | Interface | MAC |
    |---|---|---|---|---|---|
-   | Mac 1 |  |  |  | en0 |  |
-   | Mac 2 |  |  |  | en0 |  |
-   | Mac 3 |  |  |  | en0 |  |
-   | Mac 4 |  |  |  | en0 |  |
+   | Mac 1 | 10.7.14.12 | 255.255.240.0 | | en0 | |
+   | Mac 2 | 10.7.4.94 | 255.255.240.0 | | en0 | |
+   | Mac 3 | 10.7.15.253 | 255.255.240.0 | | en0 | |
+   | Mac 4 | 10.7.17.142 | 255.255.240.0 | | en0 | |
 
 3. Enter the four IPs into `config.env`, then on one Mac:
 

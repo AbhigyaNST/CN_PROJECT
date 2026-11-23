@@ -42,12 +42,12 @@ Diagram file: [`topology.svg`](topology.svg)
 
 *(fill in your real IPs — `scripts/configure.sh` stamps these everywhere)*
 
-| Machine | IP (example) | Services (port/proto) | Role | Cloud equivalent |
+| Machine | IP | Services (port/proto) | Role | Cloud equivalent |
 |---|---|---|---|---|
-| Mac 1 | 192.168.1.11 | dnsmasq — **53/UDP** (+53/TCP fallback) | Private DNS server + test client | **AWS Route 53** private hosted zone |
-| Mac 2 | 192.168.1.12 | nginx — **443/TCP + 8443/TCP** (TLS), 80/8080 (redirect) | Edge: reverse proxy, TLS termination, round-robin load balancer | **Cloud LB / CDN edge** (AWS ALB, GCP LB, Cloudflare) |
-| Mac 3 | 192.168.1.13 | backend.py A — **3001/TCP**; Phase 2: backup dnsmasq 53/UDP, standby nginx | Application server instance A (+ resilience roles) | **EC2/GCE instance** in a private subnet |
-| Mac 4 | 192.168.1.14 | backend.py B — **3002/TCP** | Application server instance B + test client | second instance, other "AZ" |
+| Mac 1 | 10.7.14.12 | dnsmasq — **53/UDP** (+53/TCP fallback) | Private DNS server + test client | **AWS Route 53** private hosted zone |
+| Mac 2 | 10.7.4.94 | nginx — **443/TCP + 8443/TCP** (TLS), 80/8080 (redirect) | Edge: reverse proxy, TLS termination, round-robin load balancer | **Cloud LB / CDN edge** (AWS ALB, GCP LB, Cloudflare) |
+| Mac 3 | 10.7.15.253 | backend.py A — **3001/TCP**; Phase 2: backup dnsmasq 53/UDP, standby nginx | Application server instance A (+ resilience roles) | **EC2/GCE instance** in a private subnet |
+| Mac 4 | 10.7.17.142 | backend.py B — **3002/TCP** | Application server instance B + test client | second instance, other "AZ" |
 
 **Port inventory (well-known vs ephemeral):** DNS 53/UDP (well-known) ·
 HTTPS 443/TCP (well-known; 8443 permitted substitute) · backends
@@ -63,12 +63,12 @@ For `curl https://app.team1.test/api/status` on a client Mac:
 | # | What happens | Protocol / Layer (OSI → TCP/IP) | Where |
 |---|---|---|---|
 | 1 | Client checks its DNS cache (mDNSResponder); on miss sends **A? app.team1.test** | DNS — Application → Application | client → Mac 1, **UDP 53** |
-| 2 | dnsmasq answers from the local zone: **A = 192.168.1.12, TTL 30** (never forwarded upstream: `local=/team1.test/`) | DNS | Mac 1 → client |
+| 2 | dnsmasq answers from the local zone: **A = 10.7.4.94, TTL 30** (never forwarded upstream: `local=/team1.test/`) | DNS | Mac 1 → client |
 | 3 | **TCP three-way handshake** SYN → SYN-ACK → ACK; client ephemeral port ↔ server 443 | TCP — Transport → Transport | client ↔ Mac 2 |
 | 4 | **TLS handshake**: ClientHello (SNI=app.team1.test) → ServerHello → Certificate (edge cert + local CA) → key exchange → Finished; client validates chain against the trusted CA in its keychain | TLS — Session/Presentation → (rides on Transport) | client ↔ Mac 2 |
 | 5 | Encrypted **HTTP request** `GET /api/status HTTP/1.1, Host: app.team1.test` inside the TLS tunnel | HTTP — Application → Application | client → Mac 2 |
 | 6 | nginx picks the next upstream (**round-robin**: A, B, A, B…), opens a *plain HTTP* connection to it (new TCP handshake edge↔backend), forwards with `X-Forwarded-For` | HTTP + TCP | Mac 2 → Mac 3 **or** Mac 4 |
-| 7 | Backend replies `200`, JSON `{"backend":"A",…}`, header **`X-Backend: A`**; nginx relays it back through the TLS tunnel; access log records `upstream=192.168.1.13:3001` | HTTP | Mac 3/4 → Mac 2 → client |
+| 7 | Backend replies `200`, JSON `{"backend":"A",…}`, header **`X-Backend: A`**; nginx relays it back through the TLS tunnel; access log records `upstream=10.7.15.253:3001` or `10.7.17.142:3002` | HTTP | Mac 3/4 → Mac 2 → client |
 | 8 | Cached resources: `/api/cached` returns `Cache-Control: max-age=60` + `ETag`; later conditional request (`If-None-Match`) yields **304 Not Modified** — headers only | HTTP caching | backend via edge |
 
 At every hop below the application layer, IP (Network → Internet) addresses

@@ -11,4 +11,3 @@ deploy/mac2/certs/*.srl
 
 # OS noise
 .DS_Store
-*.sh
